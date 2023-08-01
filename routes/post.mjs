@@ -1,6 +1,7 @@
 import express from 'express';
 import { nanoid } from 'nanoid'
 import { client } from './../mongodb.mjs'
+import {ObjectId} from 'mongodb'
 
 const db = client.db("cruddb");
 const col = db.collection("posts");
@@ -34,7 +35,7 @@ router.post('/post', async (req, res, next) => {
         return;
     }
 
-    const insertResponse = await col.insertOne({
+    try{const insertResponse = await col.insertOne({
         id: nanoid(),
         title: req.body.title,
         text: req.body.text,
@@ -42,35 +43,59 @@ router.post('/post', async (req, res, next) => {
     console.log("insertResponse: ", insertResponse);
 
     res.send('post created');
-})
+    }catch(e){
+        console.log("error insering mongodb", e);
+        res.status(500).send('server error ,please try again');
+
+    }
+});
 
 
 router.get('/posts', async (req, res, next) => {
 
     const cursor = col.find({});
-    let results = await cursor.toArray()
+   try{let results = await cursor.toArray()
     console.log("results: ", results);
     res.send(results);
-})
+   }catch(e){
+    console.log("error getting data mongodb", e);
+    res.status(500).send('server error ,please try again');
+
+   }
+
+});
 
 
 
 
-router.get('/post/:postId', (req, res, next) => {
+router.get('/post/:postId',async (req, res, next) => {
     console.log('this is signup!', new Date());
 
-    if (req.params.postId) {
+    if (!req.params.postId) {
         res.status(403).send(`post id must be a valid number, no alphabet is allowed in post id`)
     }
+   
 
-    for (let i = 0; i < posts.length; i++) {
-        if (posts[i].id === req.params.postId) {
-            res.send(posts[i]);
-            return;
-        }
-    }
-    res.send('post not found with id ' + req.params.postId);
-})
+        const cursor = col.find({_id: new ObjectId(req.params.postId)});
+       try{
+        let results = await cursor.toArray()
+        console.log("results: ", results);
+        res.send(results);
+       }catch(e){
+        console.log("error getting data mongodb", e);
+        res.status(500).send('server error ,please try again');
+    
+       }
+});
+
+    // for (let i = 0; i < posts.length; i++) {
+    //     if (posts[i].id === req.params.postId) {
+    //         res.send(posts[i]);
+    //         return;
+    //     }
+    // }
+    // res.send('post not found with id ' + req.params.postId);
+
 
 // PUT     /api/v1/post/:userId/:postId
 // {
@@ -90,7 +115,7 @@ router.put('/post/:postId', (req, res, next) => {
             text: "updated text"
         }
         `)
-    }
+    };
 
     for (let i = 0; i < posts.length; i++) {
         if (posts[i].id === req.params.postId) {
@@ -103,7 +128,7 @@ router.put('/post/:postId', (req, res, next) => {
         }
     }
     res.send('post not found with id ' + req.params.postId);
-})
+});
 
 // DELETE  /api/v1/post/:userId/:postId
 router.delete('/post/:postId', (req, res, next) => {
@@ -120,6 +145,6 @@ router.delete('/post/:postId', (req, res, next) => {
         }
     }
     res.send('post not found with id ' + req.params.postId);
-})
+});
 
 export default router

@@ -16,4 +16,4 @@ app.use(express.static(path.join(__dirname, 'public')))
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Example server listening on port ${PORT}`)
-})
+});
