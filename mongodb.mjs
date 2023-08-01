@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb'
 
-const uri = "mongodb+srv://waqasrafi55:dbpasword@cluster0.ewkb1wu.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://dbuser:dbpassword@cluster0.9ha3mra.mongodb.net/?retryWrites=true&w=majority";
 export const client = new MongoClient(uri);
 
 async function run() {
@@ -20,6 +20,3 @@ process.on('SIGINT', async function () {
     await client.close();
     process.exit(0);
 });
-
-
-
