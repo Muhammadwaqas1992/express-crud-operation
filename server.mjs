@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 const __dirname = path.resolve();
 
-// import authRouter from './routes/auth.mjs'
+import authRouter from './routes/auth.mjs'
 // import commentRouter from './routes/comment.mjs'
 // import feedRouter from './routes/feed.mjs'
 import postRouter from './routes/post.mjs'
@@ -16,7 +16,7 @@ app.use(express.json()); // body parser
 // app.use(cors())
 
 // /api/v1/login
-// app.use("/api/v1", authRouter)
+app.use("/api/v1", authRouter)
 
 
 app.use((req, res, next) => { // JWT
